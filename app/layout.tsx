@@ -1,18 +1,23 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { ClerkProvider } from '@clerk/nextjs'
-
-import { ToasterProvider } from '@/components/toaster-provider'
-import { ModalProvider } from '@/components/modal-provider'
-import { CrispProvider } from '@/components/crisp-provider'
+ 
+ 
 
 import './globals.css'
+import Navbar from './components/navabr/Navbar';
+import ClientOnly from './components/ClientOnly';
+import Modal from './components/modals/Modal';
+import RegisterModal from './components/modals/RegisterModal';
+import ToasterProvider from './components/Toaster';
+import LoginModal from './components/modals/LoginModal';
+import AuthProvider from './components/AuthProvider';
+import getCurrentUser from './actions/getCurrentUser';
 
 const font = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Genius',
-  description: 'AI Platform',
+  title: 'AirBnb Clone',
+  description: 'AirBNB',
 }
 
 export default async function RootLayout({
@@ -20,16 +25,23 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const currentUser=await getCurrentUser()
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <CrispProvider />
-        <body className={font.className}>
-          <ToasterProvider />
-          <ModalProvider />
+       <html lang="en" suppressHydrationWarning>
+         <body className={font.className}>
+          <AuthProvider>
+
+          <ToasterProvider/>
+          <ClientOnly>
+            <LoginModal />
+            <RegisterModal />
+             
+
+         <Navbar currentUser={currentUser}/>
+          </ClientOnly>
           {children}
+          </AuthProvider>
         </body>
       </html>
-    </ClerkProvider>
-  )
+   )
 }
